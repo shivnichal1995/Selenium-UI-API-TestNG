@@ -1,41 +1,39 @@
 name: Run Automated Tests
 
-# Trigger workflow on push and pull request
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
+# 👇 Opt into Node 24 early (recommended fix)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout code from repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Java (change version if needed)
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: "17"
 
-      # Step 3: Cache Maven dependencies (speeds up builds)
-      - name: Cache Maven packages
+      - name: Cache Maven dependencies
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      # Step 4: Run tests using Maven
       - name: Run tests
         run: mvn clean test
 
-      # Step 5: Upload test reports (Surefire reports)
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
