@@ -3,6 +3,7 @@ package utils;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 public class DriverFactory {
 
@@ -13,7 +14,13 @@ public class DriverFactory {
 
         if (browser.equalsIgnoreCase("chrome")) {
             WebDriverManager.chromedriver().setup();
-            driver.set(new ChromeDriver());
+            ChromeOptions options = new ChromeOptions();
+
+            options.addArguments("--headless=new");   // REQUIRED in CI
+            options.addArguments("--no-sandbox");     // REQUIRED in Linux
+            options.addArguments("--disable-dev-shm-usage"); // fixes memory issue
+            options.addArguments("--disable-gpu");
+            driver.set(new ChromeDriver(options));
         }
 
         return getDriver();
